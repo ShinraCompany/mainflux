@@ -15,7 +15,8 @@ const (
 )
 
 type userReq struct {
-	user users.User
+	token string
+	user  users.User
 }
 
 func (req userReq) validate() error {

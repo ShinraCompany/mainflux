@@ -209,13 +209,19 @@ func decodeCredentials(_ context.Context, r *http.Request) (interface{}, error) 
 	if !strings.Contains(r.Header.Get("Content-Type"), contentType) {
 		return nil, apiutil.ErrUnsupportedContentType
 	}
+	token := apiutil.ExtractBearerToken(r)
+	if token != "" {
+		return userReq{
+			token: token,
+		}, nil
+	}
 
 	var user users.User
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		return nil, errors.Wrap(apiutil.ErrMalformedEntity, err)
 	}
 	user.Email = strings.TrimSpace(user.Email)
-	return userReq{user}, nil
+	return userReq{user: user}, nil
 }
 
 func decodeCreateUserReq(_ context.Context, r *http.Request) (interface{}, error) {
